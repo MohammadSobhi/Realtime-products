@@ -1,7 +1,7 @@
-// client.js
 import React, { useEffect, useState } from 'react';
 import io from 'socket.io-client';
-import './index.css';
+// I would like to thank Claude-3-Haiko and 2 bots for helping me 
+
 
 const socket = io('http://localhost:3000');
 
@@ -31,6 +31,7 @@ export default function App() {
   
   useEffect(() => {
     // Log the received data when it changes
+    // this needs understanding 
     if (received) {
       console.log('received is', received);
     }
