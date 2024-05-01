@@ -1,35 +1,89 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+// client.js
+import React, { useEffect, useState } from 'react';
+import io from 'socket.io-client';
+import './index.css';
 
-function App() {
-  const [count, setCount] = useState(0)
+const socket = io('http://localhost:3000');
+
+
+
+
+export default function App() {
+
+  const [products,setProducts] = useState({})
+  const [received,setReceived] = useState([])
+
+  function connectSocket(){
+    socket.on("connection",(socket) => {
+      console.log(socket)
+    })
+    
+    socket.on('update', (data) => {
+      setReceived(data);
+    });
+    
+  }
+  
+  useEffect(()=>{
+    connectSocket();
+    
+  },[])
+  
+  useEffect(() => {
+    // Log the received data when it changes
+    if (received) {
+      console.log('received is', received);
+    }
+
+  }, [received]);
+
+  function handleInput(event){
+
+    let{name,value}=event.target
+    console.log({[name]:value})
+    let currentObj = {[name]:value}
+    setProducts((prev)=>({...prev,...currentObj}))
+  }
+
+
+  function handleDelete(index){
+    socket.emit("delete",index)
+
+  }
+
+  function sendProducts(){
+    socket.emit("products",products)
+    console.log(products)
+  }
 
   return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+    
+      <div className='page-container'>
+        <div className='header-container'>
+          <h1 className="title">Real-Time Products</h1>
+          <div className="input-container">
+            <input type="text" name="product" onChange={handleInput} className="input" placeholder="Product" maxLength={18}/>
+            <input type="number" name="price" onChange={handleInput} className="input" placeholder="Price" />
+          </div>
+          <button onClick={sendProducts} className="button">Send</button>
+        </div>
+        <div className='cards-container'>
+        {received.map((receivedItem, index) => (
+          <div className="product-card" key={index}>
+            <h3>{receivedItem?.product}</h3>
+            <p>Price: ${receivedItem?.price}</p>
+            <button className='red-button' onClick={()=>handleDelete(index)}>
+              <i className="fas fa-trash"></i>
+            </button>
+          </div>
+        ))}
+        </div>
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    
+  );
 }
 
-export default App
+
+
+
+
