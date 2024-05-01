@@ -1,6 +1,8 @@
+// I would like to thank Claude-3-Haiko and 2 bots for helping me 
+
 import React, { useEffect, useState } from 'react';
 import io from 'socket.io-client';
-// I would like to thank Claude-3-Haiko and 2 bots for helping me 
+
 
 
 const socket = io('http://localhost:3000');

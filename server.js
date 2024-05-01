@@ -1,3 +1,5 @@
+// I would like to thank Claude-3-Haiko and 2 bots for helping me 
+
 import express from 'express';
 import http from 'http';
 import { Server } from 'socket.io';
@@ -6,7 +8,7 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: 'http://localhost:5173', 
+    origin: ['http://localhost:5173','http://localhost:5174'], 
     methods: ['GET', 'POST']
   }
 });
@@ -25,7 +27,7 @@ io.on('connection', (socket) => {
   // Send initial data to the client
   socket.emit('update', data);
 
-  // Listen for updates from the client
+  
   socket.on('delete', (index) => {
     const newArr = data.slice(0, index).concat(data.slice(index + 1));
     data = newArr
